@@ -9,6 +9,8 @@ include noxfile.py
 
 graft docs
 
+graft examples
+
 graft src
 
 graft tests
