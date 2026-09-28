@@ -20,6 +20,10 @@ from utlx import public
 from utlx import run
 import regex as re
 
+from ._vendor.pypi_simple import PyPISimple
+from ._vendor.pypi_simple import IndexPage
+from ._vendor.pypi_simple import ProjectPage, ProjectStatus
+from ._vendor.pypi_simple import DistributionPackage
 from ._pip_cmd import PipCmd
 
 StrPath: TypeAlias = str | PathLike[str]
@@ -28,6 +32,9 @@ MISSING = sentinel("missing")
 
 version_info = packaging.version.Version
 public(version_info = version_info)
+public(ProjectPage = ProjectPage)
+public(ProjectStatus = ProjectStatus)
+public(DistributionPackage = DistributionPackage)
 
 
 @public
@@ -397,15 +404,32 @@ class Pip:
         output = self.pip("cache", "purge", **kwargs)
         return self._parse_cache_remove(output)
 
-    def search(self, query: str, **kwargs: Any) -> "None" | None:
+    def search(self, *query: str, **kwargs: Any) -> dict[str, ProjectPage] | List[str] | None:
         """Search PyPI for packages."""
-        self._update_capture(kwargs, True)
-        output = self._pip_search(query, **kwargs)
-        return self._parse_search(output)  # pragma: no cover # TODO...
+        if "index" in kwargs:
+            raise self.NotImplementedError("pip_runner.search() does not support "
+                                           "the 'index' option.")
+        no_query = not query
+        project_pages = []
+        try:
+            with PyPISimple() as client:
+                if no_query:  # pragma: no cover
+                    index_page: IndexPage = client.get_index_page(**kwargs)
+                else:
+                    for qq in query:
+                        project_pages.append(client.get_project_page(qq, **kwargs))
+        except Exception as exc:
+            self._handle_exception(exc)
+        if no_query:  # pragma: no cover
+            return index_page.projects
+        else:
+            # self._update_capture(kwargs, True)
+            # output = self._pip_search(query, **kwargs)
+            return self._parse_search(project_pages)  # pragma: no cover
 
-    def _pip_search(self, query: str, **kwargs: Any) -> run.CompletedTextProcess:
-        raise self.NotImplementedError("pip_runner.search() is not implemented for now."
-                                       "Please be patient.")
+    # def _pip_search(self, *query: str, **kwargs: Any) -> run.CompletedTextProcess:
+    #     raise self.NotImplementedError("pip_runner.search() is not implemented for now."
+    #                                    "Please be patient.")
 
     def index(self, action: str, package: str, **kwargs: Any) -> PackageVersions | str | None:
         """Inspect information available from package indexes."""
@@ -729,12 +753,12 @@ class Pip:
                                  directories=int(dirs.split()[0])  if dirs  else -1)
 
     # NOK
-    def _parse_search(self, output: run.CompletedTextProcess) \
-                      -> "None" | None:  # pragma: no cover # TODO...
-        out = output.stdout
-        if out is None: return None
-        # TODO...
-        return None
+    def _parse_search(self, project_pages: List[ProjectPage]) -> dict[str, ProjectPage] | None:
+        result: dict[str, ProjectPage] = {}
+        for page in project_pages:
+            if not page: continue  # pragma: no cover
+            result[page.project] = page
+        return dict(result)
 
     def _parse_index_versions_json(self, output: run.CompletedTextProcess) \
                                    -> PackageVersions | None:

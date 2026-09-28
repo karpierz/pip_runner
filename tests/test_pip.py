@@ -465,11 +465,11 @@ class PipTestCase(unittest.TestCase):
             self.pip.cache("unknown command!", capture_output=False)
 
     def test_search(self):
+        self.pip.search("packaging")
+        with self.assertRaises(self.pip.RuntimeError):
+            self.pip.search("non existent")
         with self.assertRaises(self.pip.NotImplementedError):
-            self.pip.search("packaging")
-        # without output capture
-        with self.assertRaises(self.pip.NotImplementedError):
-            self.pip.search("packaging", capture_output=False)
+            self.pip.search("packaging", index="xxxx")
 
     def test_index(self):
         versions = self.pip.index("versions", "packaging")

@@ -7,7 +7,7 @@ requires = [ "setuptools>=81.0.0", "packaging>=26.3.0" ]
 
 [project]
 name = "pip_runner"
-version = "0.2.0a1"
+version = "0.3.0b1"
 description = "A small high-level wrapper around pip CLI (python -m pip)."
 keywords = [ "pip", "pip_runner", "pip-runner", "pipwrapper", "pip_api", "pip-api" ]
 license = "Zlib"
@@ -25,15 +25,14 @@ urls.Download      = "https://pypi.org/project/pip-runner/"
 urls.Repository    = "https://github.com/karpierz/pip_runner"
 urls.Tracker       = "https://github.com/karpierz/pip_runner/issues"
 urls.Sponsoring    = "https://www.paypal.com/donate/?hosted_button_id=FX8L7CJUGLW7S"
-requires-python = ">=3.10.0,<4.0.0"
+requires-python = ">=3.11.0,<4.0.0"
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Natural Language :: Polish",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -54,13 +53,16 @@ dependencies = [
   "pip>=23.3.2",
   "typing-extensions>=4.16.0",
   "packaging>=26.3.0",
-  "pkg-about>=2.4.0; python_version>='3.11'",
-  "pkg-about>=2.3.0; python_version<'3.11'",
+  "pkg-about>=2.4.0",
+  # from pypi-simple
+  "beautifulsoup4>=4.15.0",
+  "mailbits>=0.2.3",
+  "pydantic>=2.13.5",
+  "requests>=2.34.2",
   # others
-  "py-utlx>=2.5.0; python_version>='3.11'",
-  "py-utlx>=2.3.0; python_version<'3.11'",
+  "py-utlx>=2.5.0",
   "nocasedict>=2.2.1",
-  "regex>=2026.9.3",
+  "regex>=2026.9.10",
 ]
 
 [dependency-groups]
@@ -77,9 +79,9 @@ test = [
 ]
 coverage = [
   { include-group = "test" },
-  "coverage>=7.16.0",
+  "coverage>=7.16.2",
   "covdefaults>=2.3.0",
-  "diff-cover>=10.5.1",
+  "diff-cover>=10.6.0",
 ]
 docs = [
   { include-group = "base" },
@@ -99,7 +101,7 @@ docs = [
 build = [
   { include-group = "test" },
   "check-manifest>=0.51",
-  "build>=1.6.0",
+  "build>=1.6.1",
   "twine>=7.0.0",
 ]
 publish = [
@@ -113,7 +115,7 @@ typing = [
 ]
 lint = [
   { include-group = "test" },
-  "flake8>=7.3.0",
+  "flake8>=7.4.1",
   "flake8-in-file-ignores>=0.3.0",
   "flake8-pyproject>=1.2.4",
   "flake8-docstrings>=1.7.0",
@@ -149,6 +151,7 @@ run.source = [
   "tests",
 ]
 run.omit = [
+  "**/pip_runner/_vendor/**",
   "**/tests/tman_*.py",
 ]
 run.branch = true
@@ -225,7 +228,7 @@ ignore = [
 count = true
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 sqlite_cache = true
 warn_unused_configs = true

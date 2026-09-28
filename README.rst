@@ -12,8 +12,9 @@ Overview
 Key features
 ------------
 - Thin wrapper using subprocess to run pip commands via Python executable.
-- High-level Pip class with convenient methods: install, uninstall,
-  list_installed, freeze, show, search, download, wheel, help.
+- High-level Pip class with convenient methods like: install, uninstall,
+  download, list, freeze, check, show, index, wheel, hash, completion, lock,
+  config, cache, inspect, debug, help.
 - Easy to extend, test and integrate with virtual environments (pass custom
   python_executable).
 
